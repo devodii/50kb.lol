@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
   const buffer = Buffer.from(await file.arrayBuffer());
   const compressed = await compressToTarget(buffer, TARGET_KB);
 
-  const compressedFile = new File([compressed], "compressed.jpg", {
+  const compressedFile = new File([new Uint8Array(compressed)], "compressed.jpg", {
     type: "image/jpeg",
   });
 
