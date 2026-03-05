@@ -12,6 +12,7 @@ import {
 } from "react-dropzone";
 import { toast } from "sonner";
 
+import { useImageProcessor } from "@/integrations/image-transformer";
 import { cn } from "@/lib/utils";
 
 import { Skeleton } from "./ui/skeleton";
@@ -48,8 +49,6 @@ interface FileUploadProps {
 
   shape?: "square" | "circle";
 
-  onTransform?: (file: File) => Promise<File>;
-
   accept?: DropzoneOptions["accept"];
   maxSize?: number;
   multiple?: boolean;
@@ -80,7 +79,6 @@ export const FileUpload = React.forwardRef<FileUploadRef, FileUploadProps>(
       id,
       disabled = false,
       shape = "square",
-      onTransform,
       accept,
       maxSize,
       multiple = false,
@@ -90,6 +88,7 @@ export const FileUpload = React.forwardRef<FileUploadRef, FileUploadProps>(
     },
     ref,
   ) => {
+    const { processImage } = useImageProcessor();
     const [isTransforming, setIsTransforming] = React.useState(false);
 
     const onDrop = React.useCallback(
@@ -103,7 +102,7 @@ export const FileUpload = React.forwardRef<FileUploadRef, FileUploadProps>(
 
             const processedFiles = await Promise.all(
               acceptedFiles.map(async (file) => {
-                const fileToUse = onTransform ? await onTransform(file) : file;
+                const fileToUse = await processImage(file);
                 const previewUrl = URL.createObjectURL(fileToUse);
                 return Object.assign(fileToUse, {
                   preview: previewUrl,
@@ -129,7 +128,7 @@ export const FileUpload = React.forwardRef<FileUploadRef, FileUploadProps>(
           onFilesRejected?.(fileRejections);
         }
       },
-      [multiple, value, onFilesChange, onFilesRejected, onTransform],
+      [multiple, value, onFilesChange, onFilesRejected, processImage],
     );
 
     const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
