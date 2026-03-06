@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
+import { nanoid } from "nanoid";
 
 import { FileUploadApi } from "@/integrations/file-upload";
 
@@ -16,9 +17,12 @@ export async function POST(req: NextRequest) {
   const buffer = Buffer.from(await file.arrayBuffer());
   const compressed = await compressToTarget(buffer, TARGET_KB);
 
-  const compressedFile = new File([new Uint8Array(compressed)], "compressed.jpg", {
-    type: "image/jpeg",
-  });
+  const fileId = nanoid(25);
+  const compressedFile = new File(
+    [new Uint8Array(compressed)],
+    `compressed-${fileId}.jpg`,
+    { type: "image/jpeg" },
+  );
 
   const api = new FileUploadApi();
   const urls = await api.upload([compressedFile]);
@@ -60,7 +64,10 @@ async function compressToTarget(
 
   // Last resort
   return sharp(buffer)
-    .resize({ width: Math.round(originalWidth * 0.15), withoutEnlargement: true })
+    .resize({
+      width: Math.round(originalWidth * 0.15),
+      withoutEnlargement: true,
+    })
     .jpeg({ quality: 20 })
     .toBuffer();
 }
