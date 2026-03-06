@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./public/logo.png" alt="50kb.lol" width="120" />
+  <img src="./public/logo-light.png" alt="50kb.lol" width="120" height="120" style="border-radius: 50%;" />
 </p>
 
 <p align="center">
@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://50kb-lol.vercel.app/">Website</a> · <a href="https://github.com/devodii/50kb.lol">GitHub</a>
+  <a href="https://50kb.lol/">Website</a> · <a href="https://github.com/devodii/50kb.lol">GitHub</a>
 </p>
 
 ---
