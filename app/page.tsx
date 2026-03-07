@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 
 type Status = "idle" | "converting" | "done" | "error";
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 10M0B
 
 interface Result {
   url: string;
@@ -34,8 +34,6 @@ export default function Home() {
   const [file, setFile] = React.useState<FileWithPreview | null>(null);
   const [status, setStatus] = React.useState<Status>("idle");
   const [result, setResult] = React.useState<Result | null>(null);
-  const [countdown, setCountdown] = React.useState(5);
-  const [downloadReady, setDownloadReady] = React.useState(false);
 
   const handleFilesChange = (files: FileWithPreview[]) => {
     setFile(files[0] ?? null);
@@ -73,30 +71,15 @@ export default function Home() {
 
   React.useEffect(() => {
     if (status !== "done") return;
-    setCountdown(5);
-    setDownloadReady(false);
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch {}
-    const interval = setInterval(() => {
-      setCountdown((c) => {
-        if (c <= 1) {
-          clearInterval(interval);
-          setDownloadReady(true);
-          return 0;
-        }
-        return c - 1;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
   }, [status]);
 
   const handleReset = () => {
     setFile(null);
     setStatus("idle");
     setResult(null);
-    setCountdown(5);
-    setDownloadReady(false);
   };
 
   return (
@@ -214,18 +197,12 @@ export default function Home() {
               data-ad-layout-key="-7c+eo+1+2-5"
             />
 
-            {downloadReady ? (
-              <Button className="w-full" asChild>
-                <a href={result.url} download="compressed.jpg">
-                  <Download />
-                  Download ({formatKB(result.compressedSize)})
-                </a>
-              </Button>
-            ) : (
-              <Button className="w-full" disabled>
-                Download in {countdown}s&hellip;
-              </Button>
-            )}
+            <Button className="w-full" asChild>
+              <a href={result.url} download="compressed.jpg">
+                <Download />
+                Download ({formatKB(result.compressedSize)})
+              </a>
+            </Button>
 
             <Button
               variant="ghost"
