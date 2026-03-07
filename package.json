@@ -13,6 +13,8 @@
     "canvg": "^4.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "file-saver": "^2.0.5",
+    "googleapis": "^171.4.0",
     "heic-to": "^1.4.2",
     "lucide-react": "^0.577.0",
     "nanoid": "^5.1.6",
@@ -24,10 +26,12 @@
     "sharp": "^0.34.5",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
-    "uploadthing": "^7.7.4"
+    "uploadthing": "^7.7.4",
+    "vaul": "^1.1.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/file-saver": "^2.0.7",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

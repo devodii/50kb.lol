@@ -31,8 +31,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 
+  const url = urls[0];
+  const fileKey = url.split("/f/").pop()!;
+
   return NextResponse.json({
-    url: urls[0],
+    url,
+    fileKey,
     originalSize: file.size,
     compressedSize: compressed.byteLength,
   });

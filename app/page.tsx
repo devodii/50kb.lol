@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { formatKB } from "@/lib/utils";
 import Image from "next/image";
 
 declare global {
@@ -9,25 +10,24 @@ declare global {
   }
 }
 
-import { Download, Github, Info, Loader2 } from "lucide-react";
+import { Github, Info, Loader2, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { SubmitFeedback } from "@/components/submit-feedback";
 import { FileUpload, type FileWithPreview } from "@/components/file-upload";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { DownloadButton } from "@/components/download-button";
 
 type Status = "idle" | "converting" | "done" | "error";
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 10M0B
 
 interface Result {
+  fileKey: string;
   url: string;
   originalSize: number;
   compressedSize: number;
-}
-
-function formatKB(bytes: number) {
-  return `${(bytes / 1024).toFixed(1)} KB`;
 }
 
 export default function Home() {
@@ -82,10 +82,29 @@ export default function Home() {
     setResult(null);
   };
 
+  const handleShare = async () => {
+    if (!result) return;
+    const shareUrl = `${window.location.origin}/r/${result.fileKey}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          url: shareUrl,
+          title: "Compressed image — 50kb.lol",
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("Link copied to clipboard");
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name !== "AbortError") {
+        toast.error("Could not share image");
+      }
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-16">
       <div className="w-full max-w-md space-y-6">
-        {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3 space-y-0.5">
             <Image
@@ -197,11 +216,15 @@ export default function Home() {
               data-ad-layout-key="-7c+eo+1+2-5"
             />
 
-            <Button className="w-full" asChild>
-              <a href={result.url} download="compressed.jpg">
-                <Download />
-                Download ({formatKB(result.compressedSize)})
-              </a>
+            <DownloadButton
+              url={result.url}
+              filename="compressed.jpg"
+              label={`Download (${formatKB(result.compressedSize)})`}
+            />
+
+            <Button variant="outline" className="w-full" onClick={handleShare}>
+              <Share2 />
+              Share
             </Button>
 
             <Button
@@ -216,16 +239,20 @@ export default function Home() {
         )}
       </div>
 
-      <footer className="mt-12 text-sm text-muted-foreground">
-        Built with ♥ by{" "}
-        <a
-          href="https://www.linkedin.com/in/emmanuelodii/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline underline-offset-4 hover:text-foreground transition-colors"
-        >
-          devodii
-        </a>
+      <footer className="mt-12 flex items-center gap-4 text-sm text-muted-foreground">
+        <span>
+          Built with ♥ by{" "}
+          <a
+            href="https://www.linkedin.com/in/emmanuelodii/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-4 hover:text-foreground transition-colors"
+          >
+            devodii
+          </a>
+        </span>
+        <span aria-hidden>·</span>
+        <SubmitFeedback />
       </footer>
     </div>
   );
