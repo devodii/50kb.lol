@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 
 import { FileUploadApi } from "@/integrations/file-upload";
 
-const TARGET_KB = 48;
+const TARGET_KB = 9;
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
